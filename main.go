@@ -349,6 +349,7 @@ func sendSNMPCommand(mode mode, params *g.GoSNMP, listen, hostname string) error
 	running := true
 	for running {
 		status, err := params.Get(getStatusRequest(randomID))
+		log.Println(status)
 		if err != nil {
 			return fmt.Errorf("error on sending status request: %w", err)
 		}
