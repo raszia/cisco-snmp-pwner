@@ -348,6 +348,7 @@ func sendSNMPCommand(mode mode, params *g.GoSNMP, listen, hostname string) error
 
 	// get status of command
 	running := true
+	c := 0
 	for running {
 		status, err := params.Get(getStatusRequest(randomID))
 		log.Println(jsonbutify(status))
@@ -358,7 +359,15 @@ func sendSNMPCommand(mode mode, params *g.GoSNMP, listen, hostname string) error
 			return fmt.Errorf("got no status (%d variables)", len(status.Variables))
 		}
 		statusVar := status.Variables[0]
-		statusInt := statusVar.Value.(int)
+		statusInt, ok := statusVar.Value.(int)
+		if !ok {
+			log.Println(`"Value": null,`)
+			time.Sleep(time.Second * 3)
+			c++
+			if c >= 3 {
+				running = false
+			}
+		}
 		// waiting(1), running(2), successful(3), failed(4)
 		switch statusInt {
 		case 1:
