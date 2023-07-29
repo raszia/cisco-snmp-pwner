@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"encoding/json"
 	"fmt"
 	"math/rand"
 	"os"
@@ -349,7 +350,7 @@ func sendSNMPCommand(mode mode, params *g.GoSNMP, listen, hostname string) error
 	running := true
 	for running {
 		status, err := params.Get(getStatusRequest(randomID))
-		log.Println(status)
+		log.Println(jsonbutify(status))
 		if err != nil {
 			return fmt.Errorf("error on sending status request: %w", err)
 		}
@@ -380,4 +381,8 @@ func sendSNMPCommand(mode mode, params *g.GoSNMP, listen, hostname string) error
 	}
 
 	return nil
+}
+func jsonbutify(v interface{}) string {
+	b, _ := json.MarshalIndent(v, "", "  ")
+	return string(b)
 }
